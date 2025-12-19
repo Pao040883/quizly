@@ -3,15 +3,15 @@ URL configuration for authentication app.
 """
 from django.urls import path
 from .views import (
-    register_view,
-    login_view,
-    logout_view,
-    refresh_token_view
+    RegisterView,
+    LoginView,
+    LogoutView,
+    RefreshTokenView
 )
 
 urlpatterns = [
-    path('register/', register_view, name='register'),
-    path('login/', login_view, name='login'),
-    path('logout/', logout_view, name='logout'),
-    path('token/refresh/', refresh_token_view, name='token_refresh'),
+    path('register/', RegisterView.as_view(), name='register'),
+    path('login/', LoginView.as_view(), name='login'),
+    path('logout/', LogoutView.as_view(), name='logout'),
+    path('token/refresh/', RefreshTokenView.as_view(), name='token_refresh'),
 ]

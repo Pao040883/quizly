@@ -1,8 +1,8 @@
 """
 Views for quizzes app.
 """
-from rest_framework import status
-from rest_framework.decorators import api_view, permission_classes
+from rest_framework import generics, status
+from rest_framework.views import APIView
 from rest_framework.permissions import IsAuthenticated
 from rest_framework.response import Response
 from django.shortcuts import get_object_or_404
@@ -56,112 +56,58 @@ def process_quiz_creation(serializer, user):
     )
 
 
-@api_view(['POST'])
-@permission_classes([IsAuthenticated])
-def create_quiz_view(request):
-    """
-    Create quiz from YouTube URL.
+class CreateQuizView(APIView):
+    """Create quiz from YouTube URL."""
+    permission_classes = [IsAuthenticated]
 
-    Args:
-        request: HTTP request with YouTube URL
+    def post(self, request):
+        """
+        Create quiz from YouTube URL.
 
-    Returns:
-        Response: Created quiz data or error message
-    """
-    serializer = CreateQuizSerializer(data=request.data)
-    if not serializer.is_valid():
-        return Response(serializer.errors, status.HTTP_400_BAD_REQUEST)
+        Args:
+            request: HTTP request with YouTube URL
 
-    try:
-        return process_quiz_creation(serializer, request.user)
-    except Exception as e:
-        return Response(
-            {'detail': f'Error creating quiz: {str(e)}'},
-            status.HTTP_500_INTERNAL_SERVER_ERROR
-        )
+        Returns:
+            Response: Created quiz data or error message
+        """
+        serializer = CreateQuizSerializer(data=request.data)
+        if not serializer.is_valid():
+            return Response(serializer.errors, status.HTTP_400_BAD_REQUEST)
 
-
-@api_view(['GET'])
-@permission_classes([IsAuthenticated])
-def quiz_list_view(request):
-    """
-    Get all quizzes for the authenticated user.
-
-    Args:
-        request: HTTP request from authenticated user
-
-    Returns:
-        Response: List of user's quizzes
-    """
-    quizzes = Quiz.objects.filter(user=request.user)
-    serializer = QuizSerializer(quizzes, many=True)
-    return Response(serializer.data, status=status.HTTP_200_OK)
+        try:
+            return process_quiz_creation(serializer, request.user)
+        except Exception as e:
+            return Response(
+                {'detail': f'Error creating quiz: {str(e)}'},
+                status.HTTP_500_INTERNAL_SERVER_ERROR
+            )
 
 
-def handle_get_quiz(quiz):
-    """
-    Handle GET request for quiz detail.
+class QuizListView(generics.ListAPIView):
+    """Get all quizzes for the authenticated user."""
+    serializer_class = QuizSerializer
+    permission_classes = [IsAuthenticated]
 
-    Args:
-        quiz: Quiz model instance
+    def get_queryset(self):
+        """
+        Get all quizzes for the authenticated user.
 
-    Returns:
-        Response: Serialized quiz data
-    """
-    serializer = QuizSerializer(quiz)
-    return Response(serializer.data, status=status.HTTP_200_OK)
-
-
-def handle_patch_quiz(quiz, data):
-    """
-    Handle PATCH request for quiz update.
-
-    Args:
-        quiz: Quiz model instance
-        data: Dictionary with update fields
-
-    Returns:
-        Response: Updated quiz data or validation errors
-    """
-    serializer = QuizSerializer(quiz, data=data, partial=True)
-    if not serializer.is_valid():
-        return Response(serializer.errors, status.HTTP_400_BAD_REQUEST)
-    serializer.save()
-    return Response(serializer.data, status=status.HTTP_200_OK)
+        Returns:
+            QuerySet: User's quizzes
+        """
+        return Quiz.objects.filter(user=self.request.user)
 
 
-def handle_delete_quiz(quiz):
-    """
-    Handle DELETE request for quiz.
+class QuizDetailView(generics.RetrieveUpdateDestroyAPIView):
+    """Retrieve, update, or delete a specific quiz."""
+    serializer_class = QuizSerializer
+    permission_classes = [IsAuthenticated]
 
-    Args:
-        quiz: Quiz model instance
+    def get_queryset(self):
+        """
+        Get queryset filtered by authenticated user.
 
-    Returns:
-        Response: 204 No Content
-    """
-    quiz.delete()
-    return Response(status=status.HTTP_204_NO_CONTENT)
-
-
-@api_view(['GET', 'PATCH', 'DELETE'])
-@permission_classes([IsAuthenticated])
-def quiz_detail_view(request, pk):
-    """
-    Retrieve, update, or delete a specific quiz.
-
-    Args:
-        request: HTTP request
-        pk: Quiz primary key
-
-    Returns:
-        Response: Quiz data, updated quiz, or 204 No Content
-    """
-    quiz = get_object_or_404(Quiz, pk=pk, user=request.user)
-
-    if request.method == 'GET':
-        return handle_get_quiz(quiz)
-    elif request.method == 'PATCH':
-        return handle_patch_quiz(quiz, request.data)
-    elif request.method == 'DELETE':
-        return handle_delete_quiz(quiz)
+        Returns:
+            QuerySet: User's quizzes
+        """
+        return Quiz.objects.filter(user=self.request.user)

@@ -2,7 +2,7 @@
 Views for authentication app.
 """
 from rest_framework import status
-from rest_framework.decorators import api_view, permission_classes
+from rest_framework.views import APIView
 from rest_framework.permissions import AllowAny, IsAuthenticated
 from rest_framework.response import Response
 from rest_framework_simplejwt.tokens import RefreshToken
@@ -23,30 +23,32 @@ from ..utils import (
 )
 
 
-@api_view(['POST'])
-@permission_classes([AllowAny])
-def register_view(request):
-    """
-    Register a new user.
+class RegisterView(APIView):
+    """Register a new user."""
+    permission_classes = [AllowAny]
 
-    Args:
-        request: HTTP request with user registration data
+    def post(self, request):
+        """
+        Register a new user.
 
-    Returns:
-        Response: Success message or validation errors
-    """
-    serializer = RegisterSerializer(data=request.data)
-    if not serializer.is_valid():
-        return Response(
-            serializer.errors,
-            status=status.HTTP_400_BAD_REQUEST
+        Args:
+            request: HTTP request with user registration data
+
+        Returns:
+            Response: Success message or validation errors
+        """
+        serializer = RegisterSerializer(data=request.data)
+        if not serializer.is_valid():
+            return Response(
+                serializer.errors,
+                status=status.HTTP_400_BAD_REQUEST
+            )
+
+        serializer.save()
+        return create_success_response(
+            'User created successfully!',
+            status.HTTP_201_CREATED
         )
-
-    serializer.save()
-    return create_success_response(
-        'User created successfully!',
-        status.HTTP_201_CREATED
-    )
 
 
 def authenticate_user(username, password):
@@ -105,29 +107,31 @@ def validate_and_authenticate(serializer):
     return user, None
 
 
-@api_view(['POST'])
-@permission_classes([AllowAny])
-def login_view(request):
-    """
-    Login user and set auth cookies.
+class LoginView(APIView):
+    """Login user and set auth cookies."""
+    permission_classes = [AllowAny]
 
-    Args:
-        request: HTTP request with login credentials
+    def post(self, request):
+        """
+        Login user and set auth cookies.
 
-    Returns:
-        Response: Login success with user data or error message
-    """
-    serializer = LoginSerializer(data=request.data)
-    user, error_response = validate_and_authenticate(serializer)
+        Args:
+            request: HTTP request with login credentials
 
-    if error_response:
-        return error_response
-    if not user:
-        return create_error_response(
-            'Invalid credentials',
-            status.HTTP_401_UNAUTHORIZED
-        )
-    return create_login_response(user)
+        Returns:
+            Response: Login success with user data or error message
+        """
+        serializer = LoginSerializer(data=request.data)
+        user, error_response = validate_and_authenticate(serializer)
+
+        if error_response:
+            return error_response
+        if not user:
+            return create_error_response(
+                'Invalid credentials',
+                status.HTTP_401_UNAUTHORIZED
+            )
+        return create_login_response(user)
 
 
 def blacklist_refresh_token(refresh_token):
@@ -158,26 +162,28 @@ def create_logout_response():
     return response
 
 
-@api_view(['POST'])
-@permission_classes([IsAuthenticated])
-def logout_view(request):
-    """
-    Logout user and blacklist tokens.
+class LogoutView(APIView):
+    """Logout user and blacklist tokens."""
+    permission_classes = [IsAuthenticated]
 
-    Args:
-        request: HTTP request with auth cookies
+    def post(self, request):
+        """
+        Logout user and blacklist tokens.
 
-    Returns:
-        Response: Logout success or token error message
-    """
-    try:
-        blacklist_refresh_token(request.COOKIES.get('refresh_token'))
-        return create_logout_response()
-    except TokenError:
-        return create_error_response(
-            'Invalid or expired token',
-            status.HTTP_400_BAD_REQUEST
-        )
+        Args:
+            request: HTTP request with auth cookies
+
+        Returns:
+            Response: Logout success or token error message
+        """
+        try:
+            blacklist_refresh_token(request.COOKIES.get('refresh_token'))
+            return create_logout_response()
+        except TokenError:
+            return create_error_response(
+                'Invalid or expired token',
+                status.HTTP_400_BAD_REQUEST
+            )
 
 
 def create_refresh_response(access_token):
@@ -219,24 +225,26 @@ def process_token_refresh(refresh_token):
         return None, error
 
 
-@api_view(['POST'])
-@permission_classes([AllowAny])
-def refresh_token_view(request):
-    """
-    Refresh access token using refresh token from cookie.
+class RefreshTokenView(APIView):
+    """Refresh access token using refresh token from cookie."""
+    permission_classes = [AllowAny]
 
-    Args:
-        request: HTTP request with refresh token cookie
+    def post(self, request):
+        """
+        Refresh access token using refresh token from cookie.
 
-    Returns:
-        Response: New access token or error message
-    """
-    refresh_token = request.COOKIES.get('refresh_token')
-    if not refresh_token:
-        return create_error_response(
-            'Refresh token not found',
-            status.HTTP_401_UNAUTHORIZED
-        )
+        Args:
+            request: HTTP request with refresh token cookie
 
-    response, error = process_token_refresh(refresh_token)
-    return response if response else error
+        Returns:
+            Response: New access token or error message
+        """
+        refresh_token = request.COOKIES.get('refresh_token')
+        if not refresh_token:
+            return create_error_response(
+                'Refresh token not found',
+                status.HTTP_401_UNAUTHORIZED
+            )
+
+        response, error = process_token_refresh(refresh_token)
+        return response if response else error
