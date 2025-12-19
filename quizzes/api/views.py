@@ -32,8 +32,8 @@ class CreateQuizView(APIView):
 
         try:
             url = serializer.validated_data['url']
-            quiz_data = create_quiz_from_url(url, request.user)
-            quiz = create_quiz_in_db(request.user, quiz_data, url)
+            quiz_data, normalized_url = create_quiz_from_url(url, request.user)
+            quiz = create_quiz_in_db(request.user, quiz_data, normalized_url)
             return Response(
                 QuizSerializer(quiz).data,
                 status.HTTP_201_CREATED

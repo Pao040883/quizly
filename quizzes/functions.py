@@ -43,7 +43,7 @@ def download_youtube_audio(url):
         url: YouTube video URL string
 
     Returns:
-        str: Path to downloaded audio file
+        tuple: (audio_file_path, video_id)
     """
     output_dir = settings.MEDIA_ROOT / 'temp_audio'
     output_dir.mkdir(parents=True, exist_ok=True)
@@ -53,8 +53,22 @@ def download_youtube_audio(url):
     with yt_dlp.YoutubeDL(ydl_opts) as ydl:
         info = ydl.extract_info(url, download=True)
         audio_file = ydl.prepare_filename(info)
+        video_id = info['id']
 
-    return audio_file
+    return audio_file, video_id
+
+
+def get_normalized_youtube_url(video_id):
+    """
+    Create normalized YouTube URL from video ID.
+
+    Args:
+        video_id: YouTube video ID string
+
+    Returns:
+        str: Normalized YouTube URL
+    """
+    return f"https://www.youtube.com/watch?v={video_id}"
 
 
 def cleanup_audio_file(audio_file_path):
@@ -266,9 +280,10 @@ def create_quiz_from_url(url, user):
         user: User model instance (currently unused)
 
     Returns:
-        dict: Generated quiz data ready for database
+        tuple: (quiz_data, normalized_url)
     """
-    audio_file = download_youtube_audio(url)
+    audio_file, video_id = download_youtube_audio(url)
+    normalized_url = get_normalized_youtube_url(video_id)
     transcript = transcribe_audio(audio_file)
     quiz_data = generate_quiz_with_gemini(transcript)
-    return quiz_data
+    return quiz_data, normalized_url

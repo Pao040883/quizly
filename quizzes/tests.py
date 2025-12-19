@@ -260,8 +260,10 @@ class FunctionIntegrationTests(TestCase):
         mock_instance.extract_info.return_value = {'id': 'test123'}
         mock_instance.prepare_filename.return_value = '/path/to/test123.mp3'
 
-        result = download_youtube_audio('https://youtube.com/watch?v=test')
-        self.assertEqual(result, '/path/to/test123.mp3')
+        url = 'https://youtube.com/watch?v=test'
+        audio_file, video_id = download_youtube_audio(url)
+        self.assertEqual(audio_file, '/path/to/test123.mp3')
+        self.assertEqual(video_id, 'test123')
         mock_instance.extract_info.assert_called_once()
 
     @patch('quizzes.functions.WHISPER_MODEL')
@@ -337,7 +339,7 @@ class FunctionIntegrationTests(TestCase):
     ):
         """Test complete quiz creation pipeline."""
         from quizzes.functions import create_quiz_from_url
-        mock_download.return_value = '/path/audio.mp3'
+        mock_download.return_value = ('/path/audio.mp3', 'test123')
         mock_transcribe.return_value = 'Transcript text'
         mock_generate.return_value = {
             'title': 'Quiz',
@@ -345,9 +347,12 @@ class FunctionIntegrationTests(TestCase):
         }
 
         user = User.objects.create_user('testuser', password='test')
-        result = create_quiz_from_url('https://youtube.com/watch?v=test', user)
+        url = 'https://youtube.com/watch?v=test'
+        quiz_data, normalized_url = create_quiz_from_url(url, user)
 
-        self.assertEqual(result['title'], 'Quiz')
+        self.assertEqual(quiz_data['title'], 'Quiz')
+        expected_url = 'https://www.youtube.com/watch?v=test123'
+        self.assertEqual(normalized_url, expected_url)
         mock_download.assert_called_once()
         mock_transcribe.assert_called_once()
         mock_generate.assert_called_once()
@@ -370,17 +375,20 @@ class CreateQuizViewTests(TestCase):
     @patch('quizzes.api.views.create_quiz_from_url')
     def test_create_quiz_success(self, mock_create_quiz):
         """Test successful quiz creation."""
-        mock_create_quiz.return_value = {
-            'title': 'Test Quiz',
-            'description': 'Test Description',
-            'questions': [
-                {
-                    'question': 'Q1',
-                    'options': ['A', 'B', 'C', 'D'],
-                    'answer': 'A'
-                }
-            ]
-        }
+        mock_create_quiz.return_value = (
+            {
+                'title': 'Test Quiz',
+                'description': 'Test Description',
+                'questions': [
+                    {
+                        'question': 'Q1',
+                        'options': ['A', 'B', 'C', 'D'],
+                        'answer': 'A'
+                    }
+                ]
+            },
+            'https://www.youtube.com/watch?v=dQw4w9WgXcQ'
+        )
         response = self.client.post(
             '/api/createQuiz/',
             {'url': 'https://www.youtube.com/watch?v=dQw4w9WgXcQ'},
