@@ -6,10 +6,14 @@ python-dotenv>=1.0.1
 
 # AI & ML
 openai-whisper>=20240930
-google-generativeai>=0.8.3
+google-genai
 
 # YouTube
 yt-dlp>=2024.12
 
 # Utilities
 Pillow>=11.0
+
+# Testing & Code Quality
+coverage>=7.6
+flake8>=7.0

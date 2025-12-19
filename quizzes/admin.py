@@ -12,8 +12,8 @@ class QuestionInline(admin.TabularInline):
     model = Question
     extra = 1
     fields = (
-        'question_title', 
-        'question_options', 
+        'question_title',
+        'question_options',
         'answer'
     )
 
@@ -24,17 +24,17 @@ class QuizAdmin(admin.ModelAdmin):
     Admin for Quiz model.
     """
     list_display = (
-        'id', 
-        'title', 
-        'user', 
-        'created_at', 
+        'id',
+        'title',
+        'user',
+        'created_at',
         'updated_at'
     )
     list_filter = ('created_at', 'user')
     search_fields = ('title', 'description', 'user__username')
     readonly_fields = ('created_at', 'updated_at')
     inlines = [QuestionInline]
-    
+
     fieldsets = (
         ('Quiz Information', {
             'fields': ('user', 'title', 'description', 'video_url')
@@ -52,25 +52,25 @@ class QuestionAdmin(admin.ModelAdmin):
     Admin for Question model.
     """
     list_display = (
-        'id', 
-        'quiz', 
-        'question_title', 
+        'id',
+        'quiz',
+        'question_title',
         'answer'
     )
     list_filter = ('quiz', 'created_at')
     search_fields = (
-        'question_title', 
-        'answer', 
+        'question_title',
+        'answer',
         'quiz__title'
     )
     readonly_fields = ('created_at', 'updated_at')
-    
+
     fieldsets = (
         ('Question Information', {
             'fields': (
-                'quiz', 
-                'question_title', 
-                'question_options', 
+                'quiz',
+                'question_title',
+                'question_options',
                 'answer'
             )
         }),

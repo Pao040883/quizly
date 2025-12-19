@@ -10,8 +10,8 @@ class Quiz(models.Model):
     Quiz model to store quiz information.
     """
     user = models.ForeignKey(
-        User, 
-        on_delete=models.CASCADE, 
+        User,
+        on_delete=models.CASCADE,
         related_name='quizzes'
     )
     title = models.CharField(max_length=255)
@@ -34,8 +34,8 @@ class Question(models.Model):
     Question model to store quiz questions.
     """
     quiz = models.ForeignKey(
-        Quiz, 
-        on_delete=models.CASCADE, 
+        Quiz,
+        on_delete=models.CASCADE,
         related_name='questions'
     )
     question_title = models.TextField()

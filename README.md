@@ -66,12 +66,21 @@ GEMINI_API_KEY = 'your_api_key_here'
 python manage.py migrate
 ```
 
-### 6. Create Admin User (optional)
+### 6. Download Whisper AI Model (REQUIRED)
+**⚠️ Important:** This step is mandatory before creating any quizzes!
+```bash
+python manage.py download_whisper
+```
+This will download the Whisper tiny model (~75 MB). This is a one-time process that takes less than 1 minute depending on your internet connection. The model is cached locally and will be instantly available for all future quiz creations.
+
+**Note:** The application uses the 'tiny' model for optimal performance. For best results, use YouTube videos of **30-60 seconds length**. Longer videos may exceed frontend timeout limits.
+
+### 7. Create Admin User (optional)
 ```bash
 python manage.py createsuperuser
 ```
 
-### 7. Start Server
+### 8. Start Server
 ```bash
 python manage.py runserver
 ```

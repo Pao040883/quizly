@@ -11,12 +11,12 @@ class RegisterSerializer(serializers.ModelSerializer):
     Serializer for user registration.
     """
     password = serializers.CharField(
-        write_only=True, 
-        required=True, 
+        write_only=True,
+        required=True,
         validators=[validate_password]
     )
     confirmed_password = serializers.CharField(
-        write_only=True, 
+        write_only=True,
         required=True
     )
 
@@ -53,8 +53,8 @@ class LoginSerializer(serializers.Serializer):
     """
     username = serializers.CharField(required=True)
     password = serializers.CharField(
-        required=True, 
-        write_only=True, 
+        required=True,
+        write_only=True,
         style={'input_type': 'password'}
     )
 
