@@ -4,7 +4,13 @@ Utility functions for quizzes app.
 
 
 def create_question_in_db(quiz, q_data):
-    """Create a single question for a quiz."""
+    """
+    Create a single question for a quiz.
+
+    Args:
+        quiz: Quiz model instance
+        q_data: Dictionary with question, options, answer keys
+    """
     from .models import Question
     Question.objects.create(
         quiz=quiz,

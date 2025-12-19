@@ -26,7 +26,15 @@ from ..utils import (
 @api_view(['POST'])
 @permission_classes([AllowAny])
 def register_view(request):
-    """Register a new user."""
+    """
+    Register a new user.
+
+    Args:
+        request: HTTP request with user registration data
+
+    Returns:
+        Response: Success message or validation errors
+    """
     serializer = RegisterSerializer(data=request.data)
     if not serializer.is_valid():
         return Response(
@@ -42,12 +50,29 @@ def register_view(request):
 
 
 def authenticate_user(username, password):
-    """Authenticate user with credentials."""
+    """
+    Authenticate user with credentials.
+
+    Args:
+        username: Username string
+        password: Password string
+
+    Returns:
+        User: Authenticated user object or None
+    """
     return authenticate(username=username, password=password)
 
 
 def create_login_response(user):
-    """Create login response with tokens."""
+    """
+    Create login response with tokens.
+
+    Args:
+        user: Authenticated user object
+
+    Returns:
+        Response: Login response with user data and JWT cookies
+    """
     refresh = RefreshToken.for_user(user)
     response = Response(
         {'detail': 'Login successfully!', 'user': UserSerializer(user).data},
@@ -59,7 +84,15 @@ def create_login_response(user):
 
 
 def validate_and_authenticate(serializer):
-    """Validate serializer and authenticate user."""
+    """
+    Validate serializer and authenticate user.
+
+    Args:
+        serializer: LoginSerializer instance
+
+    Returns:
+        tuple: (User object or None, Error response or None)
+    """
     if not serializer.is_valid():
         return None, Response(
             serializer.errors,
@@ -75,7 +108,15 @@ def validate_and_authenticate(serializer):
 @api_view(['POST'])
 @permission_classes([AllowAny])
 def login_view(request):
-    """Login user and set auth cookies."""
+    """
+    Login user and set auth cookies.
+
+    Args:
+        request: HTTP request with login credentials
+
+    Returns:
+        Response: Login success with user data or error message
+    """
     serializer = LoginSerializer(data=request.data)
     user, error_response = validate_and_authenticate(serializer)
 
@@ -90,14 +131,24 @@ def login_view(request):
 
 
 def blacklist_refresh_token(refresh_token):
-    """Blacklist the refresh token."""
+    """
+    Blacklist the refresh token.
+
+    Args:
+        refresh_token: JWT refresh token string to blacklist
+    """
     if refresh_token:
         token = RefreshToken(refresh_token)
         token.blacklist()
 
 
 def create_logout_response():
-    """Create logout success response."""
+    """
+    Create logout success response.
+
+    Returns:
+        Response: Logout success message with deleted cookies
+    """
     response = create_success_response(
         'Log-Out successfully! All Tokens will be deleted. '
         'Refresh token is now invalid.',
@@ -110,7 +161,15 @@ def create_logout_response():
 @api_view(['POST'])
 @permission_classes([IsAuthenticated])
 def logout_view(request):
-    """Logout user and blacklist tokens."""
+    """
+    Logout user and blacklist tokens.
+
+    Args:
+        request: HTTP request with auth cookies
+
+    Returns:
+        Response: Logout success or token error message
+    """
     try:
         blacklist_refresh_token(request.COOKIES.get('refresh_token'))
         return create_logout_response()
@@ -122,7 +181,15 @@ def logout_view(request):
 
 
 def create_refresh_response(access_token):
-    """Create refresh token response."""
+    """
+    Create refresh token response.
+
+    Args:
+        access_token: New JWT access token
+
+    Returns:
+        Response: Token refreshed message with new access cookie
+    """
     response = Response(
         {'detail': 'Token refreshed', 'access': str(access_token)},
         status=status.HTTP_200_OK
@@ -132,7 +199,15 @@ def create_refresh_response(access_token):
 
 
 def process_token_refresh(refresh_token):
-    """Process token refresh and return response or error."""
+    """
+    Process token refresh and return response or error.
+
+    Args:
+        refresh_token: JWT refresh token string
+
+    Returns:
+        tuple: (Response object or None, Error response or None)
+    """
     try:
         token = RefreshToken(refresh_token)
         return create_refresh_response(token.access_token), None
@@ -147,7 +222,15 @@ def process_token_refresh(refresh_token):
 @api_view(['POST'])
 @permission_classes([AllowAny])
 def refresh_token_view(request):
-    """Refresh access token using refresh token from cookie."""
+    """
+    Refresh access token using refresh token from cookie.
+
+    Args:
+        request: HTTP request with refresh token cookie
+
+    Returns:
+        Response: New access token or error message
+    """
     refresh_token = request.COOKIES.get('refresh_token')
     if not refresh_token:
         return create_error_response(
