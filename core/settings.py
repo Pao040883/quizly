@@ -5,16 +5,20 @@ Django settings for core project.
 from pathlib import Path
 from datetime import timedelta
 import os
+from dotenv import load_dotenv
 
 # Build paths inside the project like this: BASE_DIR / 'subdir'.
 BASE_DIR = Path(__file__).resolve().parent.parent
 
+# Load environment variables from .env file
+load_dotenv(BASE_DIR / '.env')
+
 
 # SECURITY WARNING: keep the secret key used in production secret!
-SECRET_KEY = 'django-insecure-dev-key-change-this-in-production-12345'
+SECRET_KEY = os.getenv('SECRET_KEY', 'django-insecure-dev-key-change-this-in-production-12345')
 
 # SECURITY WARNING: don't run with debug turned on in production!
-DEBUG = True
+DEBUG = os.getenv('DEBUG', 'True') == 'True'
 
 ALLOWED_HOSTS = ['localhost', '127.0.0.1']
 
@@ -188,6 +192,6 @@ JWT_COOKIE_SAMESITE = 'Lax'
 JWT_COOKIE_MAX_AGE = 60 * 60 * 24 * 7  # 7 days
 
 
+# Gemini API Settings
 # Get your API key from: https://aistudio.google.com/app/apikey
-GEMINI_API_KEY = 'AIzaSyCAb8TqH3eoBo77IjWTZI0tDprSvdY8gfQ'  # Hier deinen Gemini API Key eintragen
-GEMINI_API_KEY = os.getenv('GEMINI_API_KEY', 'AIzaSyCAb8TqH3eoBo77IjWTZI0tDprSvdY8gfQ')
+GEMINI_API_KEY = os.getenv('GEMINI_API_KEY', '')

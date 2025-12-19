@@ -1,21 +1,21 @@
 # Quizly Backend
 
-Django REST API Backend für die Quizly Quiz-Anwendung mit KI-gestützter Quiz-Generierung aus YouTube-Videos.
+Django REST API Backend for the Quizly quiz application with AI-powered quiz generation from YouTube videos.
 
-## 📋 Anforderungen
+## 📋 Requirements
 
-### Systemanforderungen
+### System Requirements
 - Python 3.10+
-- **FFMPEG** (global installiert) - **ERFORDERLICH** für Whisper AI
+- **FFMPEG** (globally installed) - **REQUIRED** for Whisper AI
 - Git
 
 ### FFMPEG Installation
 
 #### Windows
-1. Download von https://www.gyan.dev/ffmpeg/builds/
-2. Extrahiere die Datei
-3. Füge den `bin`-Ordner zur PATH-Umgebungsvariable hinzu
-4. Teste mit: `ffmpeg -version`
+1. Download from https://www.gyan.dev/ffmpeg/builds/
+2. Extract the file
+3. Add the `bin` folder to your PATH environment variable
+4. Test with: `ffmpeg -version`
 
 #### macOS
 ```bash
@@ -30,13 +30,13 @@ sudo apt install ffmpeg
 
 ## 🚀 Installation
 
-### 1. Repository klonen
+### 1. Clone Repository
 ```bash
 git clone <repository-url>
 cd backend
 ```
 
-### 2. Virtuelle Umgebung erstellen und aktivieren
+### 2. Create and Activate Virtual Environment
 ```bash
 python -m venv venv
 
@@ -47,43 +47,43 @@ venv\Scripts\activate
 source venv/bin/activate
 ```
 
-### 3. Dependencies installieren
+### 3. Install Dependencies
 ```bash
 pip install -r requirements.txt
 ```
 
-### 4. Gemini API Key einrichten
-1. Gehe zu: https://aistudio.google.com/app/apikey
-2. Erstelle einen kostenlosen API-Key
-3. Öffne `core/settings.py`
-4. Trage deinen API-Key ein:
+### 4. Configure Gemini API Key
+1. Go to: https://aistudio.google.com/app/apikey
+2. Create a free API key
+3. Open `core/settings.py`
+4. Enter your API key:
 ```python
-GEMINI_API_KEY = 'dein_api_key_hier'
+GEMINI_API_KEY = 'your_api_key_here'
 ```
 
-### 5. Datenbank migrieren
+### 5. Run Database Migrations
 ```bash
 python manage.py migrate
 ```
 
-### 6. Admin-User erstellen (optional)
+### 6. Create Admin User (optional)
 ```bash
 python manage.py createsuperuser
 ```
 
-### 7. Server starten
+### 7. Start Server
 ```bash
 python manage.py runserver
 ```
 
-Die API läuft nun unter: `http://localhost:8000`
+The API is now running at: `http://localhost:8000`
 
 ## 📚 API Endpoints
 
 ### Authentication Endpoints
 
 #### POST `/api/register/`
-Registriert einen neuen Benutzer.
+Registers a new user.
 
 **Request Body:**
 ```json
@@ -103,7 +103,7 @@ Registriert einen neuen Benutzer.
 ```
 
 #### POST `/api/login/`
-Meldet den Benutzer an und setzt Auth-Cookies.
+Logs in the user and sets auth cookies.
 
 **Request Body:**
 ```json
@@ -126,7 +126,7 @@ Meldet den Benutzer an und setzt Auth-Cookies.
 ```
 
 #### POST `/api/logout/`
-Meldet den Benutzer ab und löscht alle Tokens.
+Logs out the user and deletes all tokens.
 
 **Authentication:** Required
 
@@ -138,7 +138,7 @@ Meldet den Benutzer ab und löscht alle Tokens.
 ```
 
 #### POST `/api/token/refresh/`
-Erneuert den Access-Token mithilfe des Refresh-Tokens.
+Refreshes the access token using the refresh token.
 
 **Response (200):**
 ```json
@@ -151,7 +151,7 @@ Erneuert den Access-Token mithilfe des Refresh-Tokens.
 ### Quiz Endpoints
 
 #### POST `/api/createQuiz/`
-Erstellt ein neues Quiz basierend auf einer YouTube-URL.
+Creates a new quiz based on a YouTube URL.
 
 **Authentication:** Required
 
@@ -185,7 +185,7 @@ Erstellt ein neues Quiz basierend auf einer YouTube-URL.
 ```
 
 #### GET `/api/quizzes/`
-Ruft alle Quizzes des authentifizierten Benutzers ab.
+Retrieves all quizzes of the authenticated user.
 
 **Authentication:** Required
 
@@ -205,14 +205,14 @@ Ruft alle Quizzes des authentifizierten Benutzers ab.
 ```
 
 #### GET `/api/quizzes/{id}/`
-Ruft ein spezifisches Quiz ab.
+Retrieves a specific quiz.
 
 **Authentication:** Required
 
-**Response (200):** Quiz-Objekt (siehe oben)
+**Response (200):** Quiz object (see above)
 
 #### PATCH `/api/quizzes/{id}/`
-Aktualisiert einzelne Felder eines Quiz.
+Updates individual fields of a quiz.
 
 **Authentication:** Required
 
@@ -224,21 +224,21 @@ Aktualisiert einzelne Felder eines Quiz.
 }
 ```
 
-**Response (200):** Aktualisiertes Quiz-Objekt
+**Response (200):** Updated quiz object
 
 #### DELETE `/api/quizzes/{id}/`
-Löscht ein Quiz permanent.
+Deletes a quiz permanently.
 
 **Authentication:** Required
 
-**Response (204):** Kein Content
+**Response (204):** No content
 
-## 🔒 Authentifizierung
+## 🔒 Authentication
 
-Die API verwendet JWT-Authentifizierung mit HTTP-only Cookies:
-- `access_token`: Gültig für 60 Minuten
-- `refresh_token`: Gültig für 7 Tage
-- Tokens werden automatisch als Blacklist markiert beim Logout
+The API uses JWT authentication with HTTP-only cookies:
+- `access_token`: Valid for 60 minutes
+- `refresh_token`: Valid for 7 days
+- Tokens are automatically blacklisted on logout
 
 ## 🛠️ Technologie-Stack
 
@@ -275,10 +275,10 @@ backend/
 └── requirements.txt
 ```
 
-## 🔧 Konfiguration
+## 🔧 Configuration
 
-### CORS Einstellungen
-In `core/settings.py` können die erlaubten Origins angepasst werden:
+### CORS Settings
+Allowed origins can be adjusted in `core/settings.py`:
 ```python
 CORS_ALLOWED_ORIGINS = [
     'http://localhost:5500',
@@ -287,7 +287,7 @@ CORS_ALLOWED_ORIGINS = [
 ]
 ```
 
-### JWT Einstellungen
+### JWT Settings
 ```python
 SIMPLE_JWT = {
     'ACCESS_TOKEN_LIFETIME': timedelta(minutes=60),
@@ -299,48 +299,48 @@ SIMPLE_JWT = {
 
 ## 📝 Admin Panel
 
-Das Admin Panel ist verfügbar unter: `http://localhost:8000/admin/`
+The Admin Panel is available at: `http://localhost:8000/admin/`
 
 Features:
-- Benutzer-Verwaltung
-- Quiz-Verwaltung mit Inline-Fragen
-- Fragen bearbeiten und hinzufügen
-- Such- und Filterfunktionen
+- User management
+- Quiz management with inline questions
+- Edit and add questions
+- Search and filter functions
 
 ## 🐛 Troubleshooting
 
-### FFMPEG nicht gefunden
-Stelle sicher, dass FFMPEG korrekt installiert und im PATH ist:
+### FFMPEG not found
+Make sure FFMPEG is correctly installed and in your PATH:
 ```bash
 ffmpeg -version
 ```
 
-### Gemini API Key Fehler
-Überprüfe, ob der API Key in `settings.py` eingetragen ist:
+### Gemini API Key Error
+Check if the API key is entered in `settings.py`:
 ```python
-GEMINI_API_KEY = 'dein_api_key_hier'
+GEMINI_API_KEY = 'your_api_key_here'
 ```
 
-### CORS Fehler
-Füge die Frontend-URL zu `CORS_ALLOWED_ORIGINS` hinzu.
+### CORS Errors
+Add your frontend URL to `CORS_ALLOWED_ORIGINS`.
 
-## 📄 Lizenz
+## 📄 License
 
-Dieses Projekt ist Teil des Developer Akademie Backend-Kurses.
+This project is part of the Developer Akademie Backend Course.
 
-## 👨‍💻 Entwicklung
+## 👨‍💻 Development
 
 ### Code Style
-- PEP-8 konform
-- Funktionen maximal 14 Zeilen
-- Sprechende Variablennamen (snake_case)
-- Docstrings für alle Funktionen
+- PEP-8 compliant
+- Functions maximum 14 lines
+- Descriptive variable names (snake_case)
+- Docstrings for all functions
 
-### Tests ausführen
+### Run Tests
 ```bash
 python manage.py test
 ```
 
 ## 📞 Support
 
-Bei Fragen oder Problemen erstelle ein Issue im Repository oder kontaktiere den Entwickler.
+For questions or issues, create an issue in the repository or contact the developer.
