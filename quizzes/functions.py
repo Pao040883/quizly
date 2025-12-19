@@ -10,7 +10,7 @@ from django.conf import settings
 from google import genai
 
 # Preload Whisper model at module level
-WHISPER_MODEL = whisper.load_model("tiny")
+WHISPER_MODEL = whisper.load_model("base")
 
 
 def get_youtube_download_opts(output_path):

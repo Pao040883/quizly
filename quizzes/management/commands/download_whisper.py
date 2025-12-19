@@ -10,10 +10,10 @@ class Command(BaseCommand):
     help = 'Download Whisper AI model for transcription'
 
     def handle(self, *args, **options):
-        self.stdout.write('Downloading Whisper tiny model (~75 MB)...')
+        self.stdout.write('Downloading Whisper base model (~140 MB)...')
         self.stdout.write('This only needs to be done once. Please wait...')
 
-        whisper.load_model("tiny")
+        whisper.load_model("base")
 
         msg = '✓ Whisper model downloaded successfully!'
         self.stdout.write(self.style.SUCCESS(msg))

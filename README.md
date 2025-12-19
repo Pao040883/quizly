@@ -71,9 +71,9 @@ python manage.py migrate
 ```bash
 python manage.py download_whisper
 ```
-This will download the Whisper tiny model (~75 MB). This is a one-time process that takes less than 1 minute depending on your internet connection. The model is cached locally and will be instantly available for all future quiz creations.
+This will download the Whisper base model (~140 MB). This is a one-time process that takes less than 1 minute depending on your internet connection. The model is cached locally and will be instantly available for all future quiz creations.
 
-**Note:** The application uses the 'tiny' model for optimal performance. For best results, use YouTube videos of **30-60 seconds length**. Longer videos may exceed frontend timeout limits.
+**Note:** The application uses the 'base' model for optimal balance between performance and accuracy.
 
 ### 7. Create Admin User (optional)
 ```bash
